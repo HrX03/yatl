@@ -49,20 +49,47 @@ class YatlCore {
     _currentTranslations = _translationsCache[locale];
   }
 
-  String translate(String key) {
+  String translate(
+    String key, {
+    List<String>? arguments,
+    Map<String, String>? namedArguments,
+  }) {
     return _currentTranslations?.lookup(
           key,
           onFallback: _fallbackTranslate,
+          arguments: arguments ?? [],
+          namedArguments: namedArguments ?? {},
         ) ??
-        _fallbackTranslate(key);
+        _fallbackTranslate(
+          key,
+          arguments: arguments ?? [],
+          namedArguments: namedArguments ?? {},
+        );
   }
 
-  String? nullableTranslate(String key) {
-    return _currentTranslations?.nullableLookup(key) ??
-        _fallbackTranslations.nullableLookup(key);
+  String? nullableTranslate(
+    String key, {
+    List<String>? arguments,
+    Map<String, String>? namedArguments,
+  }) {
+    return _currentTranslations?.nullableLookup(
+          key,
+          arguments: arguments ?? [],
+          namedArguments: namedArguments ?? {},
+        ) ??
+        _fallbackTranslations.nullableLookup(
+          key,
+          arguments: arguments ?? [],
+          namedArguments: namedArguments ?? {},
+        );
   }
 
-  String plural(String key, num amount) {
+  String plural(
+    String key,
+    num amount, {
+    List<String>? arguments,
+    Map<String, String>? namedArguments,
+  }) {
     final String other = nullableTranslate("$key.other") ?? translate(key);
     final String zero = nullableTranslate("$key.zero") ?? other;
     final String one = nullableTranslate("$key.one") ?? other;
@@ -70,18 +97,34 @@ class YatlCore {
     final String few = nullableTranslate("$key.few") ?? other;
     final String many = nullableTranslate("$key.many") ?? other;
 
-    return Intl.pluralLogic<String>(
-      amount,
-      zero: zero,
-      one: one,
-      two: two,
-      few: few,
-      many: many,
-      other: other,
-      locale: _currentTranslations?.locale.toLanguageTag() ??
-          _fallbackTranslations.locale.toLanguageTag(),
+    return TranslationString.buildStringWithArgs(
+      Intl.pluralLogic<String>(
+        amount,
+        zero: zero,
+        one: one,
+        two: two,
+        few: few,
+        many: many,
+        other: other,
+        locale: _currentTranslations?.locale.toLanguageTag() ??
+            _fallbackTranslations.locale.toLanguageTag(),
+      ),
+      arguments ?? [amount.toString()],
+      {
+        'amount': amount.toString(),
+        if (namedArguments != null) ...namedArguments,
+      },
     );
   }
 
-  String _fallbackTranslate(String key) => _fallbackTranslations.lookup(key);
+  String _fallbackTranslate(
+    String key, {
+    List<String>? arguments,
+    Map<String, String>? namedArguments,
+  }) =>
+      _fallbackTranslations.lookup(
+        key,
+        arguments: arguments ?? [],
+        namedArguments: namedArguments ?? {},
+      );
 }

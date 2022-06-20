@@ -47,12 +47,12 @@ final Map<String, Map<String, dynamic>> translations = {
         "filters": {
           "tags": {
             "selected": {
-              "zero": "zero",
-              "one": "one",
-              "two": "two",
-              "few": "few",
-              "many": "many",
-              "other": "other",
+              "zero": "zero {}",
+              "one": "one {amount}",
+              "two": "two {}",
+              "few": "few {}",
+              "many": "many {}",
+              "other": "other {}",
             },
           },
         },

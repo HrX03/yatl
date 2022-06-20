@@ -43,23 +43,36 @@ class Translations {
 
   String lookup(
     String key, {
+    List<String> arguments = const [],
+    Map<String, String> namedArguments = const {},
     TranslationFallbackHandler? onFallback,
   }) {
     if (!_stringCache.containsKey(key)) {
-      final _TranslationKey trKey = _TranslationKey.parse(key);
-      final TranslationString? element = _recursiveLookup(trKey, data);
-      _stringCache[key] = element?.data ?? onFallback?.call(key) ?? key;
+      _stringCache[key] = nullableLookup(
+            key,
+            arguments: arguments,
+            namedArguments: namedArguments,
+          ) ??
+          onFallback?.call(key) ??
+          key;
     }
 
     return _stringCache[key]!;
   }
 
-  String? nullableLookup(String key) {
+  String? nullableLookup(
+    String key, {
+    List<String> arguments = const [],
+    Map<String, String> namedArguments = const {},
+  }) {
     if (!_stringCache.containsKey(key)) {
       final _TranslationKey trKey = _TranslationKey.parse(key);
       final TranslationString? element = _recursiveLookup(trKey, data);
 
-      _stringCache[key] = element?.data;
+      _stringCache[key] = element?.buildWithArguments(
+        arguments,
+        namedArguments,
+      );
     }
 
     return _stringCache[key];
@@ -127,6 +140,33 @@ abstract class TranslationElement<T> {
 
 class TranslationString extends TranslationElement<String> {
   const TranslationString(super.data);
+
+  String buildWithArguments(
+    List<String> arguments,
+    Map<String, String> namedArguments,
+  ) {
+    return buildStringWithArgs(data, arguments, namedArguments);
+  }
+
+  static String buildStringWithArgs(
+    String input,
+    List<String> arguments,
+    Map<String, String> namedArguments,
+  ) {
+    final RegExp posArgRegex = RegExp("{}");
+    String workString = input;
+
+    for (final String argument in arguments) {
+      workString = workString.replaceFirst(posArgRegex, argument);
+    }
+
+    namedArguments.forEach((key, value) {
+      final RegExp namedArgRegex = RegExp("{$key}");
+      workString = workString.replaceFirst(namedArgRegex, value);
+    });
+
+    return workString;
+  }
 }
 
 class TranslationNamespace
