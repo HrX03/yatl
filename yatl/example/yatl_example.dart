@@ -87,14 +87,6 @@ void main() async {
   await core.init();
   await core.load(Locale.parse('en'));
   _debugLog("> Loaded english lang");
-  const JsonEncoder encoder = JsonEncoder.withIndent("  ");
-  _debugLog(
-    encoder.convert(
-      core.currentTranslations?.data.map(
-        (key, value) => MapEntry(key, value.toJson()),
-      ),
-    ),
-  );
 
   _debugLog(core.translate("phrase"));
   _debugLog(core.translate("common.reset"));

@@ -27,9 +27,10 @@ class YatlCore {
   late final Translations _fallbackTranslations;
   Translations? _currentTranslations;
 
-  Translations? get currentTranslations => _currentTranslations;
   Translations get _translations =>
       _currentTranslations ?? _fallbackTranslations;
+
+  Locale? get locale => _currentTranslations?.locale;
 
   Future<void> load(Locale locale) async {
     if (!supportedLocales.contains(locale)) {
