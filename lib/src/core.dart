@@ -28,6 +28,8 @@ class YatlCore {
   Translations? _currentTranslations;
 
   Translations? get currentTranslations => _currentTranslations;
+  Translations get _translations =>
+      _currentTranslations ?? _fallbackTranslations;
 
   Future<void> load(Locale locale) async {
     if (!supportedLocales.contains(locale)) {
@@ -56,17 +58,12 @@ class YatlCore {
     List<String>? arguments,
     Map<String, String>? namedArguments,
   }) {
-    return _currentTranslations?.lookup(
+    return nullableTranslate(
           key,
-          onFallback: _fallbackTranslate,
           arguments: arguments ?? [],
           namedArguments: namedArguments ?? {},
         ) ??
-        _fallbackTranslate(
-          key,
-          arguments: arguments ?? [],
-          namedArguments: namedArguments ?? {},
-        );
+        key;
   }
 
   String? nullableTranslate(
@@ -74,12 +71,12 @@ class YatlCore {
     List<String>? arguments,
     Map<String, String>? namedArguments,
   }) {
-    return _currentTranslations?.nullableLookup(
+    return _currentTranslations?.lookup(
           key,
           arguments: arguments ?? [],
           namedArguments: namedArguments ?? {},
         ) ??
-        _fallbackTranslations.nullableLookup(
+        _fallbackTranslations.lookup(
           key,
           arguments: arguments ?? [],
           namedArguments: namedArguments ?? {},
@@ -93,40 +90,33 @@ class YatlCore {
     Map<String, String>? namedArguments,
   }) {
     final String other = nullableTranslate("$key.other") ?? translate(key);
-    final String zero = nullableTranslate("$key.zero") ?? other;
-    final String one = nullableTranslate("$key.one") ?? other;
-    final String two = nullableTranslate("$key.two") ?? other;
-    final String few = nullableTranslate("$key.few") ?? other;
-    final String many = nullableTranslate("$key.many") ?? other;
+    final String? zero = nullableTranslate("$key.zero");
+    final String? one = nullableTranslate("$key.one");
+    final String? two = nullableTranslate("$key.two");
+    final String? few = nullableTranslate("$key.few");
+    final String? many = nullableTranslate("$key.many");
 
-    return TranslationString.buildStringWithArgs(
-      Intl.pluralLogic<String>(
-        amount,
-        zero: zero,
-        one: one,
-        two: two,
-        few: few,
-        many: many,
-        other: other,
-        locale: _currentTranslations?.locale.toLanguageTag() ??
-            _fallbackTranslations.locale.toLanguageTag(),
-      ),
-      arguments ?? [amount.toString()],
-      {
+    final String baseString = Intl.pluralLogic<String>(
+      amount,
+      zero: zero,
+      one: one,
+      two: two,
+      few: few,
+      many: many,
+      other: other,
+      locale: _translations.locale.toLanguageTag(),
+    );
+    final String solvedString = TranslationString.solve(
+      baseString,
+      arguments: arguments ?? [amount.toString()],
+      namedArguments: {
         'amount': amount.toString(),
         if (namedArguments != null) ...namedArguments,
       },
-    );
-  }
+      translations: _translations,
+      resolveReferences: false,
+    )!;
 
-  String _fallbackTranslate(
-    String key, {
-    List<String>? arguments,
-    Map<String, String>? namedArguments,
-  }) =>
-      _fallbackTranslations.lookup(
-        key,
-        arguments: arguments ?? [],
-        namedArguments: namedArguments ?? {},
-      );
+    return solvedString;
+  }
 }

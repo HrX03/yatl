@@ -2,7 +2,11 @@ import 'dart:collection';
 
 import 'package:intl/locale.dart';
 
-typedef TranslationFallbackHandler = String Function(String key);
+typedef TranslationFallbackHandler = String? Function(
+  String key, {
+  List<String>? arguments,
+  Map<String, String>? namedArguments,
+});
 
 class Translations {
   final Map<String, TranslationElement> _data;
@@ -70,8 +74,6 @@ class Translations {
           : trKey.currentNamespace!;
       table.currentNamespace = newNamespace;
       builtNamespaces.add(trKey.currentNamespace!);
-      /* final String tableNamespace =
-          "${table.currentNamespace}.${builtNamespaces.join('.')}"; */
       table[newNamespace] ??= _MutableTranslationNamespace({});
       final _MutableTranslationElement element = table[newNamespace]!;
 
@@ -87,41 +89,28 @@ class Translations {
     return oldNamespace;
   }
 
-  String lookup(
+  String? lookup(
     String key, {
     List<String> arguments = const [],
     Map<String, String> namedArguments = const {},
-    TranslationFallbackHandler? onFallback,
-  }) {
-    if (!_stringCache.containsKey(key)) {
-      _stringCache[key] = nullableLookup(
-            key,
-            arguments: arguments,
-            namedArguments: namedArguments,
-          ) ??
-          onFallback?.call(key) ??
-          key;
-    }
-
-    return _stringCache[key]!;
-  }
-
-  String? nullableLookup(
-    String key, {
-    List<String> arguments = const [],
-    Map<String, String> namedArguments = const {},
+    ReferenceStack? referenceStack,
   }) {
     if (!_stringCache.containsKey(key)) {
       final _TranslationKey trKey = _TranslationKey.parse(key);
       final TranslationString? element = _recursiveLookup(trKey, _data);
 
-      _stringCache[key] = element?.buildWithArguments(
-        arguments,
-        namedArguments,
-      );
+      _stringCache[key] = element?.data;
     }
 
-    return _stringCache[key];
+    final String? solvedString = TranslationString.solve(
+      _stringCache[key],
+      arguments: arguments,
+      namedArguments: namedArguments,
+      translations: this,
+      referenceStack: referenceStack ?? ReferenceStack({key}),
+    );
+
+    return solvedString;
   }
 
   TranslationString? _recursiveLookup(
@@ -146,7 +135,13 @@ class Translations {
 
     if (element == null) return null;
 
-    if (element is TranslationString) return element;
+    if (element is TranslationString) {
+      // We got a string when we expected a namespace.
+      // This will never get a namespace, as such it will awlways return null.
+      if (key.parts.length > 1) return null;
+
+      return element;
+    }
 
     if (element is TranslationNamespace) {
       key.popNamespace();
@@ -189,24 +184,42 @@ abstract class TranslationElement<T> {
 class TranslationString extends TranslationElement<String> {
   const TranslationString(super.data);
 
-  String buildWithArguments(
-    List<String> arguments,
-    Map<String, String> namedArguments,
-  ) {
-    return buildStringWithArgs(data, arguments, namedArguments);
-  }
-
   @override
   String toJson() {
     return data;
   }
 
-  static String buildStringWithArgs(
+  static String? solve(
+    String? input, {
+    List<String> arguments = const [],
+    Map<String, String> namedArguments = const {},
+    required Translations translations,
+    ReferenceStack? referenceStack,
+    bool resolveReferences = true,
+  }) {
+    if (input == null) return null;
+
+    final String builtString = _buildStringWithArgs(
+      input,
+      arguments,
+      namedArguments,
+    );
+
+    if (!resolveReferences) return builtString;
+
+    return _solveReferencesFromInput(
+      builtString,
+      translations,
+      referenceStack,
+    );
+  }
+
+  static String _buildStringWithArgs(
     String input,
     List<String> arguments,
     Map<String, String> namedArguments,
   ) {
-    final RegExp posArgRegex = RegExp("{}");
+    final RegExp posArgRegex = RegExp("{{}}");
     String workString = input;
 
     for (final String argument in arguments) {
@@ -214,11 +227,44 @@ class TranslationString extends TranslationElement<String> {
     }
 
     namedArguments.forEach((key, value) {
-      final RegExp namedArgRegex = RegExp("{$key}");
+      final RegExp namedArgRegex = RegExp("{{$key}}");
       workString = workString.replaceFirst(namedArgRegex, value);
     });
 
     return workString;
+  }
+
+  static String _solveReferencesFromInput(
+    String input,
+    Translations translations,
+    ReferenceStack? referenceStack,
+  ) {
+    final RegExp translationArgRegex = RegExp("(?<={@).+?(?=})");
+    final Iterable<RegExpMatch> matches = translationArgRegex.allMatches(input);
+    String result = input;
+
+    for (final RegExpMatch match in matches) {
+      final ReferenceStack stack = referenceStack ?? ReferenceStack();
+      final String reference = match.group(0)!;
+      if (stack.references.contains(reference)) {
+        continue;
+      }
+
+      stack.references.add(reference);
+
+      final String? referenceValue = translations.lookup(
+        reference,
+        referenceStack: stack,
+      );
+
+      stack.references.remove(reference);
+
+      if (referenceValue == null) continue;
+
+      result = result.replaceFirst("{@$reference}", referenceValue);
+    }
+
+    return result;
   }
 }
 
@@ -259,6 +305,12 @@ class _MutableTranslationNamespace extends _MutableTranslationElement<
       data.map((key, value) => MapEntry(key, value.toImmutable())),
     );
   }
+}
+
+class ReferenceStack {
+  final Set<String> references;
+
+  ReferenceStack([Set<String>? references]) : references = references ?? {};
 }
 
 class _ParsingElementTable {
