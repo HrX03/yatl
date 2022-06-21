@@ -27,6 +27,8 @@ class YatlCore {
   late final Translations _fallbackTranslations;
   Translations? _currentTranslations;
 
+  Translations? get currentTranslations => _currentTranslations;
+
   Future<void> load(Locale locale) async {
     if (!supportedLocales.contains(locale)) {
       if (throwOnUnsupportedLocale) {

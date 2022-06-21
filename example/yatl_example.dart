@@ -1,18 +1,18 @@
+import 'dart:convert';
+
 import 'package:intl/src/locale.dart';
 import 'package:yatl/yatl.dart';
 
-/*     <string name="backup_restore.backup.complete_desc.success.no_file">¡El proceso de copia de seguridad fue un éxito! Ahora puedes cerrar este diálogo</string>
-    <string name="backup_restore.backup.complete_desc.failure">Algo salió mal o abortaste el proceso de guardado. Puedes volver a intentar el proceso de copia de seguridad en cualquier momento</string>
-    <string name="backup_restore.restore.title">Seleccionar copia de seguridad para restaurar</string>
-    <string name="backup_restore.restore.file_open">Abrir archivo</string>
-    <string name="backup_restore.restore.from_file" comment="The argument is the backup name">%s (Del archivo)</string>
-    <string name="backup_restore.restore.info" comment="First argument is the note count in backup, second argument is tag count and third arg is creation date">Número de notas: %s, Número de etiquetas: %s\nCreado el %s</string>
-    <string name="backup_restore.restore.no_backups">No hay copias de seguridad disponibles. Intente abrir un archivo en su lugar</string>
-    <string name="backup_restore.restore.failure">No se puede restaurar la copia de seguridad</string>
-    <string name="backup_restore.import.title">Seleccionar origen de importación</string> */
-
 final Map<String, Map<String, dynamic>> translations = {
   'en': {
+    "test.namespace.shorthand": {
+      "\$": "Hello!",
+      "nested.deeper": {
+        "\$": "Incredible",
+        "amo.gu.s": "a",
+        "te.ss": "b",
+      },
+    },
     "backup_restore": {
       "backup": {
         "password": "Password",
@@ -105,7 +105,16 @@ void main() async {
   await core.init();
   await core.load(Locale.parse('en'));
   print("> Loaded core");
+  const JsonEncoder encoder = JsonEncoder.withIndent("    ");
+  print(
+    encoder.convert(
+      core.currentTranslations?.data.map(
+        (key, value) => MapEntry(key, value.toJson()),
+      ),
+    ),
+  );
 
+  print(core.translate("test.namespace.shorthand.nested.deeper.amo.gu.s"));
   print(core.translate("common.cancel"));
   print(core.translate("common.notfound"));
   print(core.translate("common.master_pass.modify"));
@@ -123,6 +132,8 @@ void main() async {
   await core.load(Locale.parse('es'));
   print("> Loaded spanish language");
 
+  print(core.translate("test.namespace.shorthand.nested.deeper.amo.gu.s"));
+  print(core.translate("test.namespace.shorthand.nested"));
   print(core.translate("common.cancel"));
   print(core.translate("common.notfound"));
   print(core.translate("common.master_pass.modify"));
@@ -134,6 +145,8 @@ void main() async {
   await core.load(Locale.parse('br'));
   print("> Loaded breton language");
 
+  print(core.translate("test.namespace.shorthand.nested.deeper.amo.gu.s"));
+  print(core.translate("test.namespace.shorthand.nested"));
   print(core.translate("common.cancel"));
   print(core.translate("common.notfound"));
   print(core.translate("common.master_pass.modify"));
