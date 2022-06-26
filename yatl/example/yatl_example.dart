@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:intl/src/locale.dart';
 import 'package:yatl/yatl.dart';
 
@@ -73,7 +75,7 @@ final Map<String, Map<String, dynamic>> translations = {
 };
 
 void main() async {
-  await Yatl.init(
+  final YatlCore core = YatlCore(
     loader: DummyLoader(translations: translations),
     supportedLocales: [
       Locale.parse('en'),
@@ -82,8 +84,7 @@ void main() async {
     fallbackLocale: Locale.parse('en'),
     throwOnUnsupportedLocale: true,
   );
-  final Yatl core = Yatl.instance;
-
+  await core.init();
   await core.load(Locale.parse('en'));
   _debugLog("> Loaded english lang");
 
