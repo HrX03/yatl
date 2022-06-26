@@ -3,26 +3,55 @@ import 'package:intl/locale.dart';
 import 'package:yatl/src/loader.dart';
 import 'package:yatl/src/translations.dart';
 
-class YatlCore {
+class Yatl {
+  static Yatl? _instance;
+  static Yatl get instance {
+    if (_instance == null) {
+      throw Exception(
+        "The global Yatl instance has not been initialized yet. Consider calling Yatl.init before accessing the instance.",
+      );
+    }
+
+    return _instance!;
+  }
+
+  static Future<void> init({
+    required TranslationsLoader loader,
+    required List<Locale> supportedLocales,
+    required Locale fallbackLocale,
+    bool throwOnUnsupportedLocale = true,
+  }) async {
+    if (_instance != null) {
+      throw Exception(
+        "The global instance has already been instanced, avoid calling init multiple times.",
+      );
+    }
+
+    _instance = Yatl._(
+      loader: loader,
+      fallbackLocale: fallbackLocale,
+      supportedLocales: supportedLocales,
+      fallbackTranslations: Translations.parse(
+        data: await loader.load(fallbackLocale),
+        locale: fallbackLocale,
+      ),
+      throwOnUnsupportedLocale: throwOnUnsupportedLocale,
+    );
+  }
+
   final TranslationsLoader loader;
   final List<Locale> supportedLocales;
   final Locale fallbackLocale;
   final bool throwOnUnsupportedLocale;
   final Map<Locale, Translations> _translationsCache = {};
 
-  YatlCore({
+  Yatl._({
     required this.loader,
     required this.supportedLocales,
     required this.fallbackLocale,
     this.throwOnUnsupportedLocale = true,
-  });
-
-  Future<void> init() async {
-    _fallbackTranslations = Translations.parse(
-      data: await loader.load(fallbackLocale),
-      locale: fallbackLocale,
-    );
-  }
+    required Translations fallbackTranslations,
+  }) : _fallbackTranslations = fallbackTranslations;
 
   late final Translations _fallbackTranslations;
   Translations? _currentTranslations;
