@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:intl/locale.dart';
+import 'package:yatl/src/extensions.dart';
 import 'package:yatl/src/loader.dart';
 import 'package:yatl/src/translations.dart';
 
@@ -62,25 +63,27 @@ class Yatl {
   Locale? get locale => _currentTranslations?.locale;
 
   Future<void> load(Locale locale) async {
-    if (!supportedLocales.contains(locale)) {
-      if (throwOnUnsupportedLocale) {
-        throw Exception(
-          "The locale $locale is't supported by this YatlCore instance.",
-        );
-      }
+    final Locale actualLocale = supportedLocales.firstWhere(
+      (l) => l.supports(locale),
+      orElse: () {
+        if (throwOnUnsupportedLocale) {
+          throw Exception(
+            "The locale '$locale' isn't supported by this YatlCore instance.",
+          );
+        }
 
-      _currentTranslations = Translations(data: {}, locale: locale);
-      return;
-    }
+        return fallbackLocale;
+      },
+    );
 
-    if (!_translationsCache.containsKey(locale)) {
-      _translationsCache[locale] = Translations.parse(
-        data: await loader.load(locale),
-        locale: locale,
+    if (!_translationsCache.containsKey(actualLocale)) {
+      _translationsCache[actualLocale] = Translations.parse(
+        data: await loader.load(actualLocale),
+        locale: actualLocale,
       );
     }
 
-    _currentTranslations = _translationsCache[locale];
+    _currentTranslations = _translationsCache[actualLocale];
   }
 
   String translate(

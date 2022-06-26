@@ -77,10 +77,10 @@ void main() async {
     loader: DummyLoader(translations: translations),
     supportedLocales: [
       Locale.parse('en'),
-      Locale.parse('it'),
+      Locale.parse('it_IT'),
     ],
     fallbackLocale: Locale.parse('en'),
-    throwOnUnsupportedLocale: false,
+    throwOnUnsupportedLocale: true,
   );
   final Yatl core = Yatl.instance;
 
@@ -91,31 +91,31 @@ void main() async {
   _debugLog(core.translate("common.reset"));
   _debugLog(core.translate("common.cancel"));
   _debugLog(core.translate("common.master_pass"));
-  _debugLog(core.translate("common.master_pass.modify"));
-  _debugLog(core.translate("common.master_pass.confirm"));
-  _debugLog(core.translate("common.master_pass.clear"));
+  _debugLog("common.master_pass.modify".translate());
+  _debugLog("common.master_pass.confirm".translate());
+  _debugLog("common.master_pass.clear".translate());
   _debugLog(core.plural("search.note.filters.tags.selected", 0));
   _debugLog(core.plural("search.note.filters.tags.selected", 1));
   _debugLog(core.plural("search.note.filters.tags.selected", 2));
-  _debugLog(core.plural("search.note.filters.tags.selected", 3));
-  _debugLog(core.plural("search.note.filters.tags.selected", 1000000));
+  _debugLog("search.note.filters.tags.selected".plural(3));
+  _debugLog("search.note.filters.tags.selected".plural(1000000));
   _debugLog(core.plural("search.note.filters.tags.selected", 8));
 
-  await core.load(Locale.parse('it'));
+  await core.load(Locale.parse('it_IT'));
   _debugLog("> Loaded italian language");
 
   _debugLog(core.translate("phrase"));
   _debugLog(core.translate("common.reset"));
   _debugLog(core.translate("common.cancel"));
   _debugLog(core.translate("common.master_pass"));
-  _debugLog(core.translate("common.master_pass.modify"));
-  _debugLog(core.translate("common.master_pass.confirm"));
-  _debugLog(core.translate("common.master_pass.clear"));
+  _debugLog("common.master_pass.modify".translate());
+  _debugLog("common.master_pass.confirm".translate());
+  _debugLog("common.master_pass.clear".translate());
   _debugLog(core.plural("search.note.filters.tags.selected", 0));
   _debugLog(core.plural("search.note.filters.tags.selected", 1));
   _debugLog(core.plural("search.note.filters.tags.selected", 2));
-  _debugLog(core.plural("search.note.filters.tags.selected", 3));
-  _debugLog(core.plural("search.note.filters.tags.selected", 1000000));
+  _debugLog("search.note.filters.tags.selected".plural(3));
+  _debugLog("search.note.filters.tags.selected".plural(1000000));
   _debugLog(core.plural("search.note.filters.tags.selected", 8));
 }
 
