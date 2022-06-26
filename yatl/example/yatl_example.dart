@@ -92,14 +92,14 @@ void main() async {
   _debugLog(core.translate("common.reset"));
   _debugLog(core.translate("common.cancel"));
   _debugLog(core.translate("common.master_pass"));
-  _debugLog("common.master_pass.modify".translate());
-  _debugLog("common.master_pass.confirm".translate());
-  _debugLog("common.master_pass.clear".translate());
+  _debugLog("common.master_pass.modify".translate(core));
+  _debugLog("common.master_pass.confirm".translate(core));
+  _debugLog("common.master_pass.clear".translate(core));
   _debugLog(core.plural("search.note.filters.tags.selected", 0));
   _debugLog(core.plural("search.note.filters.tags.selected", 1));
   _debugLog(core.plural("search.note.filters.tags.selected", 2));
-  _debugLog("search.note.filters.tags.selected".plural(3));
-  _debugLog("search.note.filters.tags.selected".plural(1000000));
+  _debugLog("search.note.filters.tags.selected".plural(core, 3));
+  _debugLog("search.note.filters.tags.selected".plural(core, 1000000));
   _debugLog(core.plural("search.note.filters.tags.selected", 8));
 
   await core.load(Locale.parse('it_IT'));
@@ -109,14 +109,14 @@ void main() async {
   _debugLog(core.translate("common.reset"));
   _debugLog(core.translate("common.cancel"));
   _debugLog(core.translate("common.master_pass"));
-  _debugLog("common.master_pass.modify".translate());
-  _debugLog("common.master_pass.confirm".translate());
-  _debugLog("common.master_pass.clear".translate());
+  _debugLog("common.master_pass.modify".translate(core));
+  _debugLog("common.master_pass.confirm".translate(core));
+  _debugLog("common.master_pass.clear".translate(core));
   _debugLog(core.plural("search.note.filters.tags.selected", 0));
   _debugLog(core.plural("search.note.filters.tags.selected", 1));
   _debugLog(core.plural("search.note.filters.tags.selected", 2));
-  _debugLog("search.note.filters.tags.selected".plural(3));
-  _debugLog("search.note.filters.tags.selected".plural(1000000));
+  _debugLog("search.note.filters.tags.selected".plural(core, 3));
+  _debugLog("search.note.filters.tags.selected".plural(core, 1000000));
   _debugLog(core.plural("search.note.filters.tags.selected", 8));
 }
 

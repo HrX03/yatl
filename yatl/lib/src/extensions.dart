@@ -2,11 +2,12 @@ import 'package:intl/locale.dart';
 import 'package:yatl/src/core.dart';
 
 extension TranslateString on String {
-  String translate({
+  String translate(
+    YatlCore core, {
     List<String>? arguments,
     Map<String, String>? namedArguments,
   }) {
-    return Yatl.instance.translate(
+    return core.translate(
       this,
       arguments: arguments,
       namedArguments: namedArguments,
@@ -14,11 +15,12 @@ extension TranslateString on String {
   }
 
   String plural(
+    YatlCore core,
     num amount, {
     List<String>? arguments,
     Map<String, String>? namedArguments,
   }) {
-    return Yatl.instance.plural(
+    return core.plural(
       this,
       amount,
       arguments: arguments,
