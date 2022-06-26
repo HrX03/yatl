@@ -19,11 +19,22 @@ class YatlCore {
   });
 
   Future<void> init() async {
+    if (_inited) {
+      throw Exception(
+        "A YatlCore instance should only be inited once. Check the 'inited' getter before calling this method to be safer",
+      );
+    }
+
     _fallbackTranslations = Translations.parse(
       data: await loader.load(fallbackLocale),
       locale: fallbackLocale,
     );
+
+    _inited = true;
   }
+
+  bool _inited = false;
+  bool get inited => _inited;
 
   late final Translations _fallbackTranslations;
   Translations? _currentTranslations;
