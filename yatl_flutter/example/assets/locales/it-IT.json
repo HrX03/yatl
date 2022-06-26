@@ -1,0 +1,42 @@
+{
+    "hello": "Ciao",
+    "world": "mondo, {@world.niceto}",
+    "world.niceto": {
+        "$": "piacere di {@world.niceto.seeyou}",
+        "seeyou": "conoscerti"
+    },
+    "phrase": "{@hello} {@world}!",
+    "common": {
+        "cancel": "Cancella {@common.reset}",
+        "reset": "Reimposta",
+        "master_pass": {
+        "$": "Pass principale",
+            "modify": "Modifica pass principale",
+            "confirm": "Conferma pass principale"
+        }
+    },
+    "button_press": {
+        "zero": "Hai premuto il pulsante {{}} volte",
+        "one": "Hai premuto il pulsante {{}} volta",
+        "two": "Hai premuto il pulsante {{}} volte",
+        "few": "Hai premuto il pulsante {{}} volte",
+        "many": "Hai premuto il pulsante {{}} volte",
+        "other": "Hai premuto il pulsante {{}} volte"
+    },
+    "search": {
+        "note": {
+            "filters": {
+                "tags": {
+                    "selected": {
+                        "zero": "zero {{}}",
+                        "one": "uno {{amount}}",
+                        "two": "due {{}}",
+                        "few": "un po' {{}}",
+                        "many": "molto {{}}",
+                        "other": "altro {{}}"
+                    }
+                }
+            }
+        }
+    }
+}

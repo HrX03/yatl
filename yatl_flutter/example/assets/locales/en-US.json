@@ -1,0 +1,42 @@
+{
+    "hello": "Hello",
+    "world": "world, {@world.niceto}",
+    "world.niceto": {
+        "$": "nice to {@world.niceto.seeyou}",
+        "seeyou": "see you"
+    },
+    "phrase": "{@hello} {@world}!",
+    "common": {
+        "cancel": "Cancel {@common.reset}",
+        "reset": "Reset",
+        "master_pass": {
+            "modify": "Modify master pass",
+            "confirm": "Confirm master pass",
+            "clear": "Clear master pass"
+        }
+    },
+    "button_press": {
+        "zero": "You pressed the button {{}} times",
+        "one": "You pressed the button {{}} time",
+        "two": "You pressed the button {{}} times",
+        "few": "You pressed the button {{}} times",
+        "many": "You pressed the button {{}} times",
+        "other": "You pressed the button {{}} times"
+    },
+    "search": {
+        "note": {
+            "filters": {
+                "tags": {
+                    "selected": {
+                        "zero": "zero {{}}",
+                        "one": "one {{amount}}",
+                        "two": "two {{}}",
+                        "few": "few {{}}",
+                        "many": "many {{}}",
+                        "other": "other {{}}"
+                    }
+                }
+            }
+        }
+    }
+}
