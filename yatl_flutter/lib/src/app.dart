@@ -5,17 +5,25 @@ import 'package:yatl_flutter/src/extensions.dart';
 
 class YatlApp extends StatefulWidget {
   final Widget child;
-  final TranslationsLoader loader;
-  final List<Locale> supportedLocales;
-  final Locale fallbackLocale;
-  final bool throwOnUnsupportedLocale;
+  final YatlCore core;
+
+  YatlApp.createCore({
+    required this.child,
+    required TranslationsLoader loader,
+    required List<Locale> supportedLocales,
+    required Locale fallbackLocale,
+    bool throwOnUnsupportedLocale = true,
+    super.key,
+  }) : core = YatlCore(
+          loader: loader,
+          supportedLocales: supportedLocales.toIntlLocales(),
+          fallbackLocale: fallbackLocale.toIntlLocale(),
+          throwOnUnsupportedLocale: throwOnUnsupportedLocale,
+        );
 
   const YatlApp({
     required this.child,
-    required this.loader,
-    required this.supportedLocales,
-    required this.fallbackLocale,
-    this.throwOnUnsupportedLocale = true,
+    required this.core,
     super.key,
   });
 
@@ -24,18 +32,11 @@ class YatlApp extends StatefulWidget {
 }
 
 class _YatlAppState extends State<YatlApp> {
-  late final YatlCore _core = YatlCore(
-    loader: widget.loader,
-    supportedLocales: widget.supportedLocales.toIntlLocales(),
-    fallbackLocale: widget.fallbackLocale.toIntlLocale(),
-    throwOnUnsupportedLocale: widget.throwOnUnsupportedLocale,
-  );
-
   @override
   Widget build(BuildContext context) {
     return YatlProvider._(
-      core: _core,
-      delegate: YatlLocalizationsDelegate(_core),
+      core: widget.core,
+      delegate: YatlLocalizationsDelegate(widget.core),
       child: widget.child,
     );
   }

@@ -4,16 +4,16 @@ import 'package:yatl_flutter/yatl_flutter.dart';
 
 void main() {
   runApp(
-    const LocaleProvider(
-      initialLocale: Locale("en", "US"),
-      child: YatlApp(
-        loader: RootBundleTranslationsLoader(path: "assets/locales"),
-        supportedLocales: [
+    LocaleProvider(
+      initialLocale: const Locale("en", "US"),
+      child: YatlApp.createCore(
+        loader: const RootBundleTranslationsLoader(path: "assets/locales"),
+        supportedLocales: const [
           Locale("en", "US"),
           Locale("it", "IT"),
         ],
-        fallbackLocale: Locale("en", "US"),
-        child: MyApp(),
+        fallbackLocale: const Locale("en", "US"),
+        child: const MyApp(),
       ),
     ),
   );
