@@ -1,0 +1,24 @@
+builders:
+  locale_data_builder:
+    import: "package:yatl_gen/builder.dart"
+    builder_factories: ["localeDataBuilder"]
+    build_extensions: {
+      "^assets/locales/{{}}/strings.xml": [
+        "^lib/generated/locale/data/{{}}.g.dart",
+      ],
+    }
+    auto_apply: dependents
+    build_to: source
+
+  locale_builder:
+    import: "package:yatl_gen/builder.dart"
+    builder_factories: ["localeBuilder"]
+    build_extensions: {
+      "$package$": [
+        "lib/generated/locale/strings.dart",
+        "lib/generated/locale/data.dart",
+        "lib/generated/locale.dart",
+      ],
+    }
+    auto_apply: dependents
+    build_to: source
