@@ -78,7 +78,7 @@ class _YatlAppState extends State<YatlApp> with WidgetsBindingObserver {
         : widget.core.fallbackLocale.toFlutterLocale();
   }
 
-  set locale(Locale value) {
+  set locale(Locale? value) {
     if (widget.setLocale == null) return;
 
     widget.setLocale!(value);
@@ -107,7 +107,7 @@ class YatlProvider extends InheritedWidget {
   Locale get fallbackLocale => core.fallbackLocale.toFlutterLocale();
 
   Locale get locale => _state.locale;
-  set locale(Locale locale) => _state.locale = locale;
+  set locale(Locale? locale) => _state.locale = locale;
   Locale get deviceLocale => _state.deviceLocale;
 
   const YatlProvider._({
