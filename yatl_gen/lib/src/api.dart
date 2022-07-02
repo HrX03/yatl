@@ -1,3 +1,4 @@
+import 'package:intl/locale.dart';
 import 'package:yatl/yatl.dart';
 
 class LocalesTranslationsLoader extends TranslationsLoader {
