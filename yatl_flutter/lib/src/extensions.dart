@@ -64,4 +64,8 @@ extension YatlContextExt on BuildContext {
   List<ui.Locale> get supportedLocales => yatlProvider.supportedLocales;
 
   ui.Locale get fallbackLocale => yatlProvider.fallbackLocale;
+
+  ui.Locale get locale => yatlProvider.locale;
+  set locale(ui.Locale locale) => yatlProvider.locale = locale;
+  ui.Locale get deviceLocale => yatlProvider.deviceLocale;
 }

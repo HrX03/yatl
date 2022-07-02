@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yatl_flutter/yatl_flutter.dart';
 
+Locale? currentLocale = const Locale("en", "US");
+
 void main() {
   runApp(
-    LocaleProvider(
-      initialLocale: const Locale("en", "US"),
-      child: YatlApp.createCore(
-        loader: const RootBundleTranslationsLoader(path: "assets/locales"),
-        supportedLocales: const [
-          Locale("en", "US"),
-          Locale("it", "IT"),
-        ],
-        fallbackLocale: const Locale("en", "US"),
-        child: const MyApp(),
-      ),
+    YatlApp.createCore(
+      loader: const RootBundleTranslationsLoader(path: "assets/locales"),
+      supportedLocales: const [
+        Locale("en", "US"),
+        Locale("it", "IT"),
+      ],
+      fallbackLocale: const Locale("en", "US"),
+      getLocale: () => currentLocale,
+      setLocale: (newLocale) => currentLocale = newLocale,
+      child: const MyApp(),
     ),
   );
 }
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         context.localizationsDelegate,
       ],
       supportedLocales: context.supportedLocales,
-      locale: LocaleProvider.getLocale(context),
+      locale: context.locale,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -79,24 +80,20 @@ class _MyHomePageState extends State<MyHomePage> {
             TextButton(
               child: const Text("Switch locale"),
               onPressed: () {
-                final Locale currentLocale = LocaleProvider.getLocale(context);
-
-                if (currentLocale == const Locale("en", "US")) {
-                  LocaleProvider.setLocale(context, const Locale("it", "IT"));
+                if (context.locale == const Locale("en", "US")) {
+                  context.locale = const Locale("it", "IT");
                 } else {
-                  LocaleProvider.setLocale(context, const Locale("en", "US"));
+                  context.locale = const Locale("en", "US");
                 }
               },
             ),
             TextButton(
               child: const Text("Set unsupported locale"),
               onPressed: () {
-                final Locale currentLocale = LocaleProvider.getLocale(context);
-
-                if (currentLocale != const Locale("es", "ES")) {
-                  LocaleProvider.setLocale(context, const Locale("es", "ES"));
-                } else if (currentLocale == const Locale("it", "IT")) {
-                  LocaleProvider.setLocale(context, const Locale("en", "US"));
+                if (context.locale != const Locale("es", "ES")) {
+                  context.locale = const Locale("es", "ES");
+                } else if (context.locale == const Locale("it", "IT")) {
+                  context.locale = const Locale("en", "US");
                 }
               },
             ),
@@ -110,64 +107,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
-
-class LocaleProvider extends StatefulWidget {
-  final Widget child;
-  final Locale initialLocale;
-
-  const LocaleProvider({
-    required this.child,
-    required this.initialLocale,
-    super.key,
-  });
-
-  @override
-  State<LocaleProvider> createState() => _LocaleProviderState();
-
-  static Locale getLocale(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<_LocaleProviderInheritedWidget>()!
-        .state
-        .locale;
-  }
-
-  static void setLocale(BuildContext context, Locale locale) {
-    context
-        .dependOnInheritedWidgetOfExactType<_LocaleProviderInheritedWidget>()!
-        .state
-        .locale = locale;
-  }
-}
-
-class _LocaleProviderState extends State<LocaleProvider> {
-  late Locale _locale = widget.initialLocale;
-
-  set locale(Locale value) {
-    setState(() {
-      _locale = value;
-    });
-  }
-
-  Locale get locale => _locale;
-
-  @override
-  Widget build(BuildContext context) {
-    return _LocaleProviderInheritedWidget(
-      state: this,
-      child: widget.child,
-    );
-  }
-}
-
-class _LocaleProviderInheritedWidget extends InheritedWidget {
-  final _LocaleProviderState state;
-
-  const _LocaleProviderInheritedWidget({
-    required this.state,
-    required super.child,
-  });
-
-  @override
-  bool updateShouldNotify(covariant InheritedWidget old) => true;
 }
